@@ -392,6 +392,9 @@ class Wrapper():
 
     def __getattr__(self, name):
         return getattr(self.obj, name)
+    
+    def __getitem__(self, name):
+        return getattr(self.obj, name)
 
 class Wrapper2():
     def __getattribute__(self, name):
@@ -405,9 +408,36 @@ Wrapper(Base()).ret
 Wrapper(Wrapper(Base())).ret(3)
 #? ['ret']
 Wrapper(Wrapper(Base())).ret
+#? int()
+Wrapper(Base())["ret"](3)
+#? ['ret']
+Wrapper(Base())["ret"]
+#? int()
+Wrapper(Wrapper(Base()))["ret"](3)
+#? ['ret']
+Wrapper(Wrapper(Base()))["ret"]
 
 #? int()
 Wrapper2(Base()).ret(3)
+
+class DictWrapper():
+    def __init__(self, wrapped_dict):
+        self.wrapped_dict = wrapped_dict
+
+    def __getattr__(self, name):
+        return self.wrapped_dict[name]
+
+    def __getitem__(self, name):
+        return self.wrapped_dict[name]
+
+#? ['ret']
+Wrapper({"test": 1}).test
+#? ['test']
+Wrapper(Wrapper({"ret": 1})).test
+#? ['ret']
+Wrapper({"test": 1})["test"]
+#? ['test']
+Wrapper(Wrapper({"ret": 1}))["test"]
 
 class GetattrArray():
     def __getattr__(self, name):
